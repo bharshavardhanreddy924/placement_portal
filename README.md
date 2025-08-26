@@ -2,23 +2,6 @@
 
 A full-stack web application for managing campus placement activities, built with React (frontend) and Flask (backend).
 
----
-
-## Table of Contents
-- [Overview](#overview)
-- [Features](#features)
-- [Tech Stack](#tech-stack)
-- [Folder Structure](#folder-structure)
-- [Setup Instructions](#setup-instructions)
-  - [Backend](#backend)
-  - [Frontend](#frontend)
-- [Environment Variables](#environment-variables)
-- [Usage](#usage)
-- [Demo Accounts](#demo-accounts)
-- [License](#license)
-
----
-
 ## Overview
 This project is a Placement Portal designed to streamline the campus recruitment process. It allows students to register, update their profiles, and apply for jobs, while coordinators can post jobs, manage applications, and oversee the placement process.
 
@@ -112,3 +95,4 @@ This project is a Placement Portal designed to streamline the campus recruitment
 
 ## License
 This project is for educational/demo purposes.
+
