@@ -17,7 +17,6 @@ A full-stack web application to streamline and modernize campus placement activi
 - [Environment Variables](#environment-variables)
 - [Usage](#usage)
 - [Demo Accounts](#demo-accounts)
-- [License](#license)
 
 ---
 
@@ -163,6 +162,3 @@ Campus placements are a critical phase for students and institutions, but the pr
 
 ---
 
-## License
-
-This project is for educational/demo purposes.
