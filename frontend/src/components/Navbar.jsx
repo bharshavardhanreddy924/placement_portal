@@ -3,7 +3,6 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
-import { BriefcaseIcon } from '@heroicons/react/24/solid'; // Or another icon library
 
 export default function Navbar() {
     const { user, logout } = useAuth();
@@ -22,7 +21,7 @@ export default function Navbar() {
     ];
 
     const coordinatorLinks = [
-        { name: 'Dashboard', href: '/jobs' },
+        { name: 'Dashboard', href: '/coord/dashboard' }, // <-- CHANGE THIS LINE
         { name: 'Post a Job', href: '/coord/jobs/new' },
     ];
 
@@ -37,7 +36,6 @@ export default function Navbar() {
                 <div className="flex items-center justify-between h-16">
                     <div className="flex items-center">
                         <NavLink to="/" className="flex-shrink-0 flex items-center space-x-2 text-white text-xl font-bold">
-                            {/* You can replace with an actual icon */}
                             <span>Placement Portal</span>
                         </NavLink>
                         <div className="hidden md:block">

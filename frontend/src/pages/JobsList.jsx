@@ -51,6 +51,7 @@ const JobCard = ({ job }) => (
 function JobsList() {
     const [jobs, setJobs] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
         api.get('/jobs')
@@ -64,6 +65,12 @@ function JobsList() {
             });
     }, []);
 
+    const filteredJobs = jobs.filter(job =>
+        job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.company.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        job.tech_stack.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+
     if (loading) return <p>Loading jobs...</p>;
 
     return (
@@ -76,15 +83,23 @@ function JobsList() {
                         type="text"
                         placeholder="Search by title, company, or tech stack..."
                         className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {jobs.map(job => (
+                {filteredJobs.map(job => (
                     <JobCard key={job._id} job={job} />
                 ))}
             </div>
+
+            {filteredJobs.length === 0 && !loading && (
+                 <div className="text-center py-12 bg-white rounded-lg shadow-md">
+                    <p className="text-gray-600 text-lg">No jobs match your search.</p>
+                </div>
+            )}
         </div>
     );
 }

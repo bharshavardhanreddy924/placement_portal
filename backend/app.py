@@ -404,5 +404,84 @@ def update_application_status(app_id):
     
     return jsonify({'message': 'Application status updated successfully'})
 
+# app.py
+
+# --- NEW COORDINATOR-SPECIFIC JOB ROUTES ---
+
+@app.route('/coord/jobs', methods=['GET'])
+@token_required
+@role_required('coordinator')
+def get_coordinator_jobs():
+    """Fetches only the jobs created by the currently logged-in coordinator."""
+    user = request.current_user
+    jobs = list(db.jobs.find({'created_by': user['_id']}))
+    
+    # Add application count to each job
+    for job in jobs:
+        job['_id'] = str(job['_id'])
+        job['created_by'] = str(job['created_by'])
+        job['deadline'] = job['deadline'].isoformat()
+        job['created_at'] = job['created_at'].isoformat()
+        app_count = db.applications.count_documents({'job_id': ObjectId(job['_id'])})
+        job['application_count'] = app_count
+
+    return jsonify(jobs)
+
+
+@app.route('/jobs/<job_id>', methods=['PUT'])
+@token_required
+@role_required('coordinator')
+def update_job(job_id):
+    """Updates an existing job posting."""
+    user = request.current_user
+    job_oid = ObjectId(job_id)
+    
+    job = db.jobs.find_one({'_id': job_oid})
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+        
+    # Security Check: Ensure the coordinator owns this job
+    if job['created_by'] != user['_id']:
+        return jsonify({'error': 'Unauthorized to edit this job'}), 403
+
+    data = request.get_json()
+    update_data = {}
+    
+    # Add fields you want to be updatable
+    allowed_fields = ['title', 'company', 'type', 'location', 'ctc', 'stipend', 'tech_stack', 'eligibility', 'description']
+    for field in allowed_fields:
+        if field in data:
+            update_data[field] = data[field]
+            
+    if 'deadline' in data:
+        update_data['deadline'] = datetime.fromisoformat(data['deadline'].replace('Z', '+00:00'))
+
+    db.jobs.update_one({'_id': job_oid}, {'$set': update_data})
+    
+    return jsonify({'message': 'Job updated successfully'})
+
+
+@app.route('/jobs/<job_id>', methods=['DELETE'])
+@token_required
+@role_required('coordinator')
+def delete_job(job_id):
+    """Deletes a job posting and all its associated applications."""
+    user = request.current_user
+    job_oid = ObjectId(job_id)
+    
+    job = db.jobs.find_one({'_id': job_oid})
+    if not job:
+        return jsonify({'error': 'Job not found'}), 404
+        
+    # Security Check: Ensure the coordinator owns this job
+    if job['created_by'] != user['_id']:
+        return jsonify({'error': 'Unauthorized to delete this job'}), 403
+        
+    # Delete the job and its applications
+    db.jobs.delete_one({'_id': job_oid})
+    db.applications.delete_many({'job_id': job_oid})
+    
+    return jsonify({'message': 'Job and all associated applications deleted successfully'})
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
